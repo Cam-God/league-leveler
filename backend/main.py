@@ -18,8 +18,6 @@ REGIONAL_ROUTES = {
     "latam": "americas",
 }
 
-# ShiroNoKenn#EUW PUUID: qYinzoJd8bT9zr5aOlZLO2cHP774vi9wXgQJu62656ifvJ0rnm7DdWZeBfuCpaQf1ayn9fLuS9LrFA
-
 
 # get account info by summoner name, tag and region
 @app.get("/riot-account/{region}/{game_name}/{tagline}")
@@ -68,7 +66,7 @@ def get_match_history(region: str, puuid: str, count: int = 5):
     if not regional_route:
         return {"error": "Unsupported region"}
 
-    url = f"https://{regional_route}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids"
+    url = f"https://{regional_route}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=10"
     params = {"start": 0, "count": count}
 
     response = requests.get(url, headers=HEADERS, params=params)
