@@ -11,7 +11,6 @@ const MatchComponent = (props) => {
   const summonerFromMatch = matchData.info.participants.find(
     (participant) => participant.puuid === summonerId
   );
-  console.log("summonerFromMatch:", summonerFromMatch);
 
   const champIconNumber = summonerFromMatch.championName
     ? champIcons[summonerFromMatch.championName.toLowerCase()]
@@ -23,7 +22,6 @@ const MatchComponent = (props) => {
     <div className={[styles.main, didWin ? styles.win : styles.loss].join(" ")}>
       <div className={styles.reportSummary}>
         <p className={styles.resultText}>{didWin ? "Victory" : "Defeat"}:</p>
-        {/* <p className={styles.championName}>{summonerFromMatch.championName}</p> */}
         <div className={styles.championIcon}>
           <img src={champIcons.baseUrl + champIconNumber} />
         </div>

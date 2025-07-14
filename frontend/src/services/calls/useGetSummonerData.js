@@ -14,7 +14,10 @@ export function useGetSummonerData() {
       `/api/riot-account/${region}/${summonerName}/${summonerTag}`
     );
     const data = await response.json();
-
+    if (!data || !data.puuid) {
+      updatePlayerUUID("NA");
+      return new Error("Invalid summoner data received");
+    }
     updateSummonerData(data);
     updatePlayerUUID(data.puuid);
   };
