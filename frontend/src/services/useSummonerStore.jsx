@@ -1,25 +1,41 @@
 import { create } from "zustand";
 
 const useSummonerStore = create((set) => ({
-  // State variables
+  // Summoner data
   summonerData: null,
-  matchHistory: null,
-  matchData: null,
-  summonerName: "",
-  region: "eu",
-  tag: "",
-  playerUUID: "",
-  canSubmit: false,
+  updateSummonerData: (data) => set({ summonerData: data }),
 
-  // Update functions
-  updateSummonerData: (data) => set({ summonerData: data }), // can input any data structure and it will be set to the state property.
+  // Match history
+  matchHistory: null,
   updateMatchHistory: (data) => set({ matchHistory: data }),
+
+  // Match data
+  matchData: null,
   updateMatchData: (data) => set({ matchData: data }),
+
+  // Summoner name
+  summonerName: "",
   updateSummonerName: (name) => set({ summonerName: name }),
-  updateRegion: (region) => set({ region }), // expects the input to imediately match the expected region format - and appends it.
-  updateTag: (tag) => set({ tag }),
-  updatePlayerUUID: (uuid) => set({ playerUUID: uuid }),
+
+  // Region
+  region: "eu",
+  updateRegion: (region) => set({ region }),
+
+  // Summoner tag
+  summonerTag: "",
+  updateSummonerTag: (summonerTag) => set({ summonerTag }),
+
+  // Summoner UUID
+  playerUUID: "",
+  updatePlayerUUID: (playerUUID) => set({ playerUUID }),
+
+  // Can submit flag
+  canSubmit: false,
   updateCanSubmit: (status) => set({ canSubmit: status }),
+
+  // Bulk match data
+  bulkMatchData: null,
+  updateBulkMatchData: (data) => set({ bulkMatchData: data }),
 }));
 
 export default useSummonerStore;

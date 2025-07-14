@@ -54,3 +54,16 @@
     }
   }
 }
+
+.champs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 1rem;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  img {
+    width: 40px;
+    height: 40px;
+  }
+}

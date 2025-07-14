@@ -1,46 +1,65 @@
 import React from "react";
 import styles from "./style-Dashboard-Component.module.scss";
+import useSummonerStore from "../../services/useSummonerStore";
+import { useGetSummonerData } from "../../services/calls/useGetSummonerData";
+import MatchComponent from "../Match/MatchComponent";
+import ChampIconMap from "../../assets/champIconMap.json";
 
 const DashboardComponent = () => {
-  const [summonerData, setSummonerData] = React.useState(null);
-  const [matchHistory, setMatchHistory] = React.useState(null);
-  const [matchData, setMatchData] = React.useState(null);
+  const {
+    summonerName,
+    region,
+    summonerTag,
+    canSubmit,
+    updateSummonerName,
+    updateRegion,
+    updateSummonerTag,
+    updateCanSubmit,
+  } = useSummonerStore();
 
-  const [summonerName, setSummonerName] = React.useState("");
-  const [region, setRegion] = React.useState("eu");
-  const [tag, setTag] = React.useState("");
-  const [playerUUID, setPlayerUUID] = React.useState("");
+  const [bulkMatchData, setBulkMatchData] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
-  const [canSubmit, setCanSubmit] = React.useState(false);
+  // const [allItems, setAllItems] = React.useState(null);
+
+  // const itemMap = async () => {
+  //   const response = await fetch(
+  //     "https://ddragon.leagueoflegends.com/cdn/14.13.1/data/en_US/item.json"
+  //   );
+  //   const data = await response.json();
+  //   const items = {};
+  //   Object.keys(data.data).forEach((key) => {
+  //     items[data.data[key].id] = data.data[key].name;
+  //   });
+  //   setAllItems(items);
+  //   console.log("All items:", items);
+  //   return items;
+  // };
+
   React.useEffect(() => {
-    if (summonerName && tag) {
-      setCanSubmit(true);
+    if (summonerName && summonerTag) {
+      updateCanSubmit(true);
     } else {
-      setCanSubmit(false);
+      updateCanSubmit(false);
     }
-  }, [summonerName, tag]);
+  }, [summonerName, summonerTag]);
 
-  const getSummonerData = async () => {
+  const getSummonerData = useGetSummonerData();
+
+  const handleFullSummonerLoad = async () => {
+    setLoading(true);
+    updateCanSubmit(false);
+    await getSummonerData();
+
+    const updatedUUID = useSummonerStore.getState().playerUUID;
+    console.log("Player UUID after update:", updatedUUID);
+
     const response = await fetch(
-      `/api/riot-account/${region}/${summonerName}/${tag}`
+      `/api/match-details/bulk/${region}/${updatedUUID}`
     );
     const data = await response.json();
-    setSummonerData(data);
-    setPlayerUUID(data.puuid);
-  };
-
-  const getMatchHistory = async () => {
-    const response = await fetch(`/api/match-history/eu/${playerUUID}`);
-    const data = await response.json();
-    setMatchHistory(data);
-  };
-
-  const getMatchData = async () => {
-    const response = await fetch(
-      `/api/match-details/eu/${matchHistory.match_ids[0]}`
-    );
-    const data = await response.json();
-    setMatchData(data);
+    setBulkMatchData(data);
+    setLoading(false);
   };
 
   return (
@@ -51,7 +70,7 @@ const DashboardComponent = () => {
           <div className={styles.inputSection}>
             <div className={styles.region}>
               <p>Region:</p>
-              <select onChange={(e) => setRegion(e.target.value)}>
+              <select onChange={(e) => updateRegion(e.target.value)}>
                 <option value="eu">EUW/EUNE</option>
                 <option value="na">NA</option>
                 <option value="kr">KR</option>
@@ -73,37 +92,28 @@ const DashboardComponent = () => {
             </div>
             <div className={styles.name}>
               <p>Summoner Name:</p>
-              <input onChange={(e) => setSummonerName(e.target.value)} />
+              <input onChange={(e) => updateSummonerName(e.target.value)} />
             </div>
             <div>
               <p>Tag:</p>
               <input
                 className={styles.tag}
                 placeholder="#"
-                onChange={(e) => setTag(e.target.value)}
+                onChange={(e) => updateSummonerTag(e.target.value)}
               />
             </div>
           </div>
+          {loading && <p>Loading...</p>}
           {canSubmit && (
-            <button onClick={getSummonerData}>Get {summonerName}'s data</button>
+            <button onClick={handleFullSummonerLoad}>
+              Get {summonerName}'s data
+            </button>
           )}
-          {playerUUID && <pre>{JSON.stringify(summonerData, null, 2)}</pre>}
-          {playerUUID && (
-            <button onClick={getMatchHistory}>Get match history</button>
-          )}
-          {matchHistory && (
-            <pre className={styles.test}>
-              {JSON.stringify(matchHistory, null, 2)}
-            </pre>
-          )}
-          {matchHistory && (
-            <button onClick={getMatchData}>Get match data</button>
-          )}
-          {matchData && (
-            <pre className={styles.test}>
-              {JSON.stringify(matchData, null, 2)}
-            </pre>
-          )}
+          {bulkMatchData &&
+            bulkMatchData.matches.map((match) => (
+              <MatchComponent key={match.metadata.matchId} match={match} />
+            ))}
+          <div className={styles.champs}></div>
         </div>
       </div>
     </>
