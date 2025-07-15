@@ -8,6 +8,7 @@ const MatchComponent = (props) => {
   const summonerId = summonerData ? summonerData.puuid : null;
 
   const matchData = props.match;
+
   const summonerFromMatch = matchData.info.participants.find(
     (participant) => participant.puuid === summonerId
   );
@@ -17,6 +18,8 @@ const MatchComponent = (props) => {
     : null;
 
   const didWin = summonerFromMatch.win;
+
+  console.log("Match Data:", matchData);
 
   return (
     <div className={[styles.main, didWin ? styles.win : styles.loss].join(" ")}>
@@ -36,6 +39,10 @@ const MatchComponent = (props) => {
       </div>
       <div className={styles.items}>
         <p>Items:</p>
+      </div>
+      <div className={styles.items}>
+        <p>Gamemode:</p>
+        <p>{matchData.info.gameMode}</p>
       </div>
     </div>
   );
